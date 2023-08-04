@@ -4,7 +4,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/vinted");
+mongoose.connect(process.env.MONGODB_URI);
 
 // express-fileupload afin de récupérer les fichiers envoyer dans body
 const fileUpload = require("express-fileupload");
