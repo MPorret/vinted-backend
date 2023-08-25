@@ -201,7 +201,7 @@ router.get("/offers", async (req, res) => {
 
     // Recherche des produits en fonction des filtres
     const allOffers = await Offer.find(userFilters)
-      .select("product_name product_price _id")
+      .populate("owner")
       .sort({ product_price: sort }) // Tri en fonction du tri demandé : ascendant ou descendant
       .limit(2) // Nombre d'articles par page
       .skip((page - 1) * 2); // Nombre d'articles à "skipper" en fonction de la page demandée
@@ -224,9 +224,9 @@ router.delete("/offers/:id", isAuthenticated, isTheSeller, async (req, res) => {
 });
 
 // Route pour afficher les détails d'une offre demandée
-router.get("/offers/:id", async (req, res) => {
+router.get("/offer/:id", async (req, res) => {
   try {
-    const offerToShow = await Offer.findById(req.params.id);
+    const offerToShow = await Offer.findById(req.params.id).populate("owner");
     res.status(201).json(offerToShow);
   } catch (error) {
     res.status(400).json({ message: error.message });

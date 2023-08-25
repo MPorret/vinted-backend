@@ -80,7 +80,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         };
         return res.status(201).json(objectResponse);
       } else {
-        return res.status(400).json({ message: "Email already existing" });
+        return res.status(409).json({ message: "Email already existing" });
       }
     } else {
       return res.status(400).json({ message: "Please, complete the form" });

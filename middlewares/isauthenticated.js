@@ -8,7 +8,8 @@ const isAuthenticated = async (req, res, next) => {
   // Si le token a été renseigné
   if (req.headers.authorization) {
     userToken = req.headers.authorization.replace("Bearer ", "");
-    // console.log(userToken); Renvoie le token de l'utilisateur
+    console.log(userToken);
+    //Renvoie le token de l'utilisateur
     const foundUser = await User.findOne({ token: userToken });
 
     // Si un utilisateur correspond au token
