@@ -73,6 +73,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         const objectResponse = {
           _id: newUser._id,
           email: newUser.email,
+          token: newUser.token,
           account: {
             username: newUser.account.username,
           },
@@ -101,7 +102,15 @@ router.post("/user/login", async (req, res) => {
           encBase64
         );
         if (hashToTest === isPresent.hash) {
-          return res.status(201).json({ message: "You're logged" });
+          const objectResponse = {
+            _id: isPresent._id,
+            email: isPresent.email,
+            token: isPresent.token,
+            account: {
+              username: isPresent.account.username,
+            },
+          };
+          return res.status(201).json(objectResponse);
         } else {
           return res
             .status(400)
