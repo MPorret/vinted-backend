@@ -203,7 +203,7 @@ router.get("/offers", async (req, res) => {
     const allOffers = await Offer.find(userFilters)
       .populate("owner")
       .sort({ product_price: sort }) // Tri en fonction du tri demandé : ascendant ou descendant
-      .limit(2) // Nombre d'articles par page
+      .limit(8) // Nombre d'articles par page
       .skip((page - 1) * 8); // Nombre d'articles à "skipper" en fonction de la page demandée
 
     // Renvoie des résultats
