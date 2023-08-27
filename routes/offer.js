@@ -171,7 +171,8 @@ router.get("/offers", async (req, res) => {
     }
     // Filtre pour nom exact
     const key = Object.keys(req.query);
-    let userFilters = "";
+    const userFilters = {};
+    let search = "";
     if (key.length) {
       // Si un filtre est fait par prix, nous initialisons la la clé "product_price" qui est un objet
       if (key.indexOf("priceMax") !== -1 || key.indexOf("priceMin") !== -1) {
@@ -191,8 +192,11 @@ router.get("/offers", async (req, res) => {
 
             // filtre pour tous les autres filtres hors sort et page (filtre accepté : title, description)
           } else if (key[i] === "search") {
-            const filterToAdd = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
-            userFilters = filterToAdd;
+            if (req.query[key[i]] !== "") {
+              search = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
+            } else {
+              search = new RegExp("", "i");
+            }
           }
         }
       }
@@ -201,8 +205,8 @@ router.get("/offers", async (req, res) => {
     // Recherche des produits en fonction des filtres
     const allOffers = await Offer.find({
       $or: [
-        { product_description: userFilters },
-        { product_name: userFilters },
+        { product_description: { $regex: search } },
+        { product_name: { $regex: search } },
       ],
     })
       .populate("owner")
