@@ -171,7 +171,7 @@ router.get("/offers", async (req, res) => {
     }
     // Filtre pour nom exact
     const key = Object.keys(req.query);
-    const userFilters = {};
+    let userFilters = "";
     if (key.length) {
       // Si un filtre est fait par prix, nous initialisons la la clé "product_price" qui est un objet
       if (key.indexOf("priceMax") !== -1 || key.indexOf("priceMin") !== -1) {
@@ -190,19 +190,21 @@ router.get("/offers", async (req, res) => {
             userFilters.product_price.$gte = req.query[key[i]];
 
             // filtre pour tous les autres filtres hors sort et page (filtre accepté : title, description)
-          } else if (key[i] === "title") {
+          } else if (key[i] === "search") {
             const filterToAdd = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
-            userFilters.product_name = filterToAdd;
-          } else if (key[i] === "description") {
-            const filterToAdd = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
-            userFilters.product_description = filterToAdd;
+            userFilters = filterToAdd;
           }
         }
       }
     }
 
     // Recherche des produits en fonction des filtres
-    const allOffers = await Offer.find(userFilters)
+    const allOffers = await Offer.find({
+      $or: [
+        { product_description: userFilters },
+        { product_name: userFilters },
+      ],
+    })
       .populate("owner")
       .sort({ product_price: sort }) // Tri en fonction du tri demandé : ascendant ou descendant
       .limit(8) // Nombre d'articles par page
