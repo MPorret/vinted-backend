@@ -190,10 +190,12 @@ router.get("/offers", async (req, res) => {
             userFilters.product_price.$gte = req.query[key[i]];
 
             // filtre pour tous les autres filtres hors sort et page (filtre accepté : title, description)
-          } else if (key[i] !== "sort" && key[i] !== "page") {
+          } else if (key[i] === "title") {
             const filterToAdd = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
-            const filterName = "product_" + key[i]; // clé de la valeur à chercher
-            userFilters[filterName] = filterToAdd;
+            userFilters.product_name = filterToAdd;
+          } else if (key[i] === "description") {
+            const filterToAdd = new RegExp(req.query[key[i]], "i"); // valeur a chercher (acceptant la casse)
+            userFilters.product_description = filterToAdd;
           }
         }
       }
