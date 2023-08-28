@@ -209,6 +209,7 @@ router.get("/offers", async (req, res) => {
         { product_name: { $regex: search } },
       ],
     })
+      .find(userFilters)
       .populate("owner")
       .sort({ product_price: sort }) // Tri en fonction du tri demandé : ascendant ou descendant
       .limit(8) // Nombre d'articles par page
