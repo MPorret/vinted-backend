@@ -43,13 +43,15 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         const token = uid(16);
 
         // Création de l'avatar
-        const avatar = {};
+        const avatar = [];
         if (req.files) {
-          avatar = await cloudinary.uploader.upload(
-            convertToBase64(req.files.picture),
-            {
-              folder: "/vinted/avatars",
-            }
+          avatar.push(
+            await cloudinary.uploader.upload(
+              convertToBase64(req.files.picture),
+              {
+                folder: "/vinted/avatars",
+              }
+            )
           );
         }
 

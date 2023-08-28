@@ -17,10 +17,10 @@ const isAuthenticated = async (req, res, next) => {
       req.user = foundUser;
       return next();
     } else {
-      res.status(401).json({ error: "Unathorized" });
+      res.status(401).json({ error: "Unathorized1" });
     }
   } else {
-    res.status(401).json({ error: "Unathorized" });
+    res.status(401).json({ error: "Unathorized2" });
   }
 };
 
