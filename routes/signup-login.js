@@ -93,7 +93,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
 });
 
 // ROUTE LOGIN : Connexion
-router.post("/user/login", async (req, res) => {
+router.post("/user", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (email && password) {
@@ -126,6 +126,17 @@ router.post("/user/login", async (req, res) => {
         .status(400)
         .json({ message: "Please, complete email and password fields" });
     }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// ROUTE FIND AN USER
+router.get("/user", async (req, res) => {
+  try {
+    const { token } = req.query;
+    const buyer = await User.findOne({ token });
+    res.status(200).json(buyer._id);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

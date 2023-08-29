@@ -17,6 +17,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// stripe
+const stripe = require("stripe")(process.env.STRIPE_KEY);
+
 // IMPORT DES MIDDLEWARES
 const isAuthenticated = require("../middlewares/isauthenticated.js");
 const isTheSeller = require("../middlewares/isTheSeller.js");
@@ -24,6 +27,7 @@ const isTheSeller = require("../middlewares/isTheSeller.js");
 // IMPORT DES MODELES
 const User = require("../models/user.js");
 const Offer = require("../models/offer.js");
+const Order = require("../models/order.js");
 
 // Fonctions
 const convertToBase64 = (file) => {
@@ -237,6 +241,53 @@ router.get("/offer/:id", async (req, res) => {
   try {
     const offerToShow = await Offer.findById(req.params.id).populate("owner");
     res.status(201).json(offerToShow);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+router.post("/offer/:id/pay", async (req, res) => {
+  try {
+    // Réception du token créer via l'API Stripe depuis le Frontend
+    const stripeToken = req.body.stripeToken;
+    const { price, name, id } = req.body;
+    console.log(req.body);
+    // Créer la transaction
+    const response = await stripe.charges.create({
+      amount: price * 100,
+      currency: "eur",
+      description: name,
+      // On envoie ici le token
+      source: stripeToken,
+    });
+    console.log(response.status);
+
+    // On cherche l'offre acheté
+    const offerBuyed = await Offer.findById(req.params.id);
+
+    // On cherche l'acheteur
+    const buyer = await User.findById(id);
+
+    // On cherche le vendeur
+    const owner = await User.findById(offerBuyed.owner);
+
+    // Création de la commande
+    const orderPassed = new Order({
+      product_name: offerBuyed.product_name,
+      product_description: offerBuyed.product_description,
+      product_price: offerBuyed.product_price,
+      product_details: offerBuyed.product_details,
+      product_image: offerBuyed.product_image,
+      owner,
+      buyer: buyer,
+    });
+
+    await orderPassed.save();
+
+    // Suppression de l'offre achetée
+    const offerToDelete = await Offer.findByIdAndDelete(req.params.id);
+
+    res.json(response);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
