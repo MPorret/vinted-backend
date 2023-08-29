@@ -254,7 +254,7 @@ router.post("/offer/:id/pay", async (req, res) => {
     console.log(req.body);
     // Créer la transaction
     const response = await stripe.charges.create({
-      amount: price * 100,
+      amount: (Math.round(price * 100) / 100).toFixed(2) * 100,
       currency: "eur",
       description: name,
       // On envoie ici le token
