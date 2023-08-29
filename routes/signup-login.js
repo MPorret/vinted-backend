@@ -93,7 +93,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
 });
 
 // ROUTE LOGIN : Connexion
-router.post("/user", async (req, res) => {
+router.post("/user/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (email && password) {
